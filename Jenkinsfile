@@ -1,10 +1,8 @@
-**`Jenkinsfile`** (à adapter avec votre token SonarQube)
-```groovy
 pipeline {
     agent any
     environment {
         SONAR_HOST_URL = 'http://host.docker.internal:9000'   // ou 172.17.0.1
-        SONAR_TOKEN    = 'squ_40246fa233e43a8d61b43d5dfbba79a400a3234b'                 // Remplacez
+        SONAR_TOKEN    = 'squ_40246fa233e43a8d61b43d5dfbba79a400a3234b'
     }
     stages {
         stage('Clone Repository') {
@@ -31,24 +29,28 @@ pipeline {
         }
         stage('SCA Scan') {
             steps {
-                dependencyCheckAnalyzer datadir: 'dependency-check-data', 
+                dependencyCheckAnalyzer(
+                    datadir: 'dependency-check-data',
                     pattern: '**/*.jar,**/*.war,**/*.py',
-                    scanpath: '.', 
+                    scanpath: '.',
                     outpath: 'dependency-check-report',
-                    failBuildOnCVSS: '7.0'
+                    failBuildOnCVSS: '7.0',
+                    toolId: 'DP_CHECK'   // <-- Ajouté pour utiliser l'outil configuré
+                )
                 dependencyCheckPublisher pattern: 'dependency-check-report/dependency-check-report.xml'
             }
         }
     }
     post {
         always {
-            publishHTML([reportDir: 'dependency-check-report', 
-                         reportFiles: 'dependency-check-report.html', 
-                         reportName: 'OWASP Report'])
+            publishHTML([
+                reportDir: 'dependency-check-report',
+                reportFiles: 'dependency-check-report.html',
+                reportName: 'OWASP Report'
+            ])
         }
         failure {
             echo 'Build failed due to errors or vulnerabilities'
         }
     }
 }
-```
