@@ -3,6 +3,7 @@ pipeline {
     environment {
         SONAR_HOST_URL = 'http://host.docker.internal:9000'
         SONAR_TOKEN    = 'squ_40246fa233e43a8d61b43d5dfbba79a400a3234b'
+        NVD_API_KEY    = credentials('nvd-api-key')
     }
     stages {
         stage('Check pytest') {
@@ -25,10 +26,8 @@ pipeline {
         stage('SCA Scan') {
             steps {
                 sh '''
-                    # Créer le répertoire de données s'il n'existe pas
                     mkdir -p /var/jenkins_home/dependency-check-data
-                    # Lancer l'analyse avec un répertoire de données spécifique
-                    /opt/dependency-check/bin/dependency-check.sh --project "TP-Jenkins-Security" --scan . --format HTML --out dependency-check-report --data /var/jenkins_home/dependency-check-data
+                    /opt/dependency-check/bin/dependency-check.sh --project "TP-Jenkins-Security" --scan . --format HTML --out dependency-check-report --data /var/jenkins_home/dependency-check-data --nvdApiKey $NVD_API_KEY
                 '''
             }
         }
