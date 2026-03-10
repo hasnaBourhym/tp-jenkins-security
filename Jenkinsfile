@@ -24,15 +24,7 @@ pipeline {
         }
         stage('SCA Scan') {
             steps {
-                dependencyCheckAnalyzer(
-                    datadir: 'dependency-check-data',
-                    pattern: '**/*.jar,**/*.war,**/*.py',
-                    scanpath: '.',
-                    outpath: 'dependency-check-report',
-                    failBuildOnCVSS: '7.0',
-                    toolId: 'DP_CHECK'
-                )
-                dependencyCheckPublisher pattern: 'dependency-check-report/dependency-check-report.xml'
+                sh 'dependency-check.sh --project "TP-Jenkins-Security" --scan . --format HTML --out dependency-check-report'
             }
         }
     }
