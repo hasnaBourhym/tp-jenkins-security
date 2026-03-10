@@ -24,7 +24,12 @@ pipeline {
         }
         stage('SCA Scan') {
             steps {
-                sh 'dependency-check.sh --project "TP-Jenkins-Security" --scan . --format HTML --out dependency-check-report'
+                sh '''
+                    # Créer le répertoire de données s'il n'existe pas
+                    mkdir -p /var/jenkins_home/dependency-check-data
+                    # Lancer l'analyse avec un répertoire de données spécifique
+                    /opt/dependency-check/bin/dependency-check.sh --project "TP-Jenkins-Security" --scan . --format HTML --out dependency-check-report --data /var/jenkins_home/dependency-check-data
+                '''
             }
         }
     }
