@@ -18,7 +18,7 @@ pipeline {
         stage('SAST Scan') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner -Dsonar.projectKey=TP-Jenkins-Security -Dsonar.sources=.'
+                    sh "sonar-scanner -Dsonar.projectKey=TP-Jenkins-Security -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN"
                 }
             }
         }
