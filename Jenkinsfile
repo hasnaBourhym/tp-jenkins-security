@@ -1,18 +1,13 @@
 pipeline {
     agent any
     environment {
-        SONAR_HOST_URL = 'http://host.docker.internal:9000'   // ou 172.17.0.1
+        SONAR_HOST_URL = 'http://host.docker.internal:9000'
         SONAR_TOKEN    = 'squ_40246fa233e43a8d61b43d5dfbba79a400a3234b'
     }
     stages {
-        stage('Clone Repository') {
+        stage('Check pytest') {
             steps {
-                git 'https://github.com/hasnaBourhym/tp-jenkins-security.git'
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                sh 'pip3 install -r requirements.txt'
+                sh 'pytest --version'
             }
         }
         stage('Run Tests') {
@@ -35,7 +30,7 @@ pipeline {
                     scanpath: '.',
                     outpath: 'dependency-check-report',
                     failBuildOnCVSS: '7.0',
-                    toolId: 'DP_CHECK'   // <-- Ajouté pour utiliser l'outil configuré
+                    toolId: 'DP_CHECK'
                 )
                 dependencyCheckPublisher pattern: 'dependency-check-report/dependency-check-report.xml'
             }
